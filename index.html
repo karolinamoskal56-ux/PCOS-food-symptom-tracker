@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food &amp; Symptom Log</title>
+<meta name="theme-color" content="#42574C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div class="auth-wrap" id="authScreen">
+  <div class="eyebrow">Personal tracking</div>
+  <h1>Food &amp; Symptom Log</h1>
+  <p class="sub">Sign in with your email to sync your log across devices. We'll send you a one-time link — no password to remember.</p>
+  <div class="auth-card">
+    <label class="field-label">Email</label>
+    <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
+    <div class="savebar" style="margin-top:14px;">
+      <button class="primary" id="authSendBtn">Send magic link</button>
+    </div>
+    <div class="auth-msg" id="authMsg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="wrap hidden" id="appRoot">
+
+  <header class="top">
+    <div>
+      <div class="eyebrow">Personal tracking</div>
+      <h1>Food &amp; Symptom Log</h1>
+      <p class="sub">A daily record of what you eat and how you feel — energy, fog, migraines, sleep, cycle — so you can look back for patterns and bring real data to your next appointment.</p>
+    </div>
+    <div class="account">
+      <span class="email" id="accountEmail"></span>
+      <button id="signOutBtn">Sign out</button>
+    </div>
+  </header>
+
+  <div class="ribbon-card">
+    <div class="ribbon-title">Last 14 days · bar height = energy, dot = migraine</div>
+    <div class="ribbon" id="ribbon"></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="active" data-tab="today">Today</button>
+    <button data-tab="history">History</button>
+    <button data-tab="doctor">For Your Doctor</button>
+  </nav>
+
+  <!-- TODAY -->
+  <div id="tab-today">
+
+    <section class="card cycle-card">
+      <div class="cycle-top">
+        <div>
+          <span class="phase-pill" id="phasePill">Not enough data yet</span>
+          <div class="cycle-meta" id="cycleMeta"></div>
+        </div>
+        <div id="cycleActionBtn"></div>
+      </div>
+      <div class="cycle-log-row">
+        <div class="field">
+          <label class="field-label">Period start</label>
+          <input type="date" id="periodStartInput">
+        </div>
+        <div class="field">
+          <label class="field-label">Period end</label>
+          <input type="date" id="periodEndInput">
+        </div>
+        <div style="flex:0 0 auto;align-self:end;">
+          <button class="ghost" id="logCycleBtn">Log</button>
+        </div>
+      </div>
+      <div class="cycle-history" id="cycleHistory"></div>
+      <p class="cycle-note">Estimate only, based on your own logged dates — not a medical prediction. PCOS can make ovulation timing irregular, so this gets more accurate the more cycles you log.</p>
+    </section>
+
+    <section class="card">
+      <h2>Food</h2>
+      <p class="hint">Log meals and snacks as you go — no need to be precise, just capture what and roughly when.</p>
+      <div class="addfood-row">
+        <select id="mealType">
+          <option>Breakfast</option>
+          <option>Lunch</option>
+          <option>Dinner</option>
+          <option>Snack</option>
+          <option>Drink</option>
+        </select>
+        <input type="text" id="foodInput" placeholder="e.g. iced espresso, muscle milk, cinnamon">
+        <button class="primary" id="addFoodBtn">Add</button>
+      </div>
+      <div class="foodlist" id="foodList"></div>
+    </section>
+
+    <section class="card">
+      <h2>How today felt</h2>
+      <p class="hint">Update this any time — it's fine to fill in partway through the day and adjust later.</p>
+
+      <label class="field-label">Energy level</label>
+      <div class="scale" id="energyScale">
+        <button data-val="1">1</button><button data-val="2">2</button><button data-val="3">3</button>
+        <button data-val="4">4</button><button data-val="5">5</button>
+      </div>
+
+      <label class="field-label">Brain fog</label>
+      <div class="scale" id="fogScale">
+        <button data-val="1">1</button><button data-val="2">2</button><button data-val="3">3</button>
+        <button data-val="4">4</button><button data-val="5">5</button>
+      </div>
+
+      <label class="field-label">Migraine today?</label>
+      <div class="migraine-opts" id="migraineOpts">
+        <button data-val="none">None</button>
+        <button data-val="mild">Mild</button>
+        <button data-val="moderate">Moderate</button>
+        <button data-val="severe">Severe</button>
+      </div>
+
+      <div class="row">
+        <div>
+          <label class="field-label">Sleep (hours)</label>
+          <input type="number" id="sleepInput" min="0" max="14" step="0.5" placeholder="e.g. 6.5">
+        </div>
+        <div>
+          <label class="field-label">Movement today?</label>
+          <select id="movementInput">
+            <option value="">—</option>
+            <option>None</option>
+            <option>Light (walk)</option>
+            <option>Moderate</option>
+            <option>Intense</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="field-label">Notes</label>
+      <textarea id="notesInput" placeholder="Anything else worth remembering — timing, meds, how a specific meal sat with you..."></textarea>
+
+      <div class="savebar">
+        <button class="primary" id="saveDayBtn">Save today's entry</button>
+        <span class="savemsg" id="saveMsg">Saved ✓</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Gap-closing check-in</h2>
+      <p class="hint">Tracking whether the 2pm and 5pm snacks happened, and whether the crash and gym showed up — so you can see if closing the gap actually changes the pattern.</p>
+
+      <label class="field-label">2–2:30pm snack</label>
+      <div class="migraine-opts" id="snack2Opts">
+        <button data-val="yes">Had it</button>
+        <button data-val="no">Skipped it</button>
+      </div>
+
+      <label class="field-label">4–5pm snack (nuts/cheese/deli meat)</label>
+      <div class="migraine-opts" id="snack5Opts">
+        <button data-val="yes">Had it</button>
+        <button data-val="no">Skipped it</button>
+      </div>
+
+      <label class="field-label">Afternoon crash?</label>
+      <div class="migraine-opts" id="crashOpts">
+        <button data-val="none">None</button>
+        <button data-val="mild">Mild</button>
+        <button data-val="hard">Hard crash</button>
+      </div>
+
+      <label class="field-label">Made it to the gym / moved after work?</label>
+      <div class="migraine-opts" id="gymOpts">
+        <button data-val="yes">Yes</button>
+        <button data-val="no">No</button>
+      </div>
+
+      <label class="field-label">Inositol taken?</label>
+      <div class="migraine-opts" id="inositolOpts">
+        <button data-val="yes">Yes</button>
+        <button data-val="no">No</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="tab-history" style="display:none;">
+    <div id="historyList"></div>
+  </div>
+
+  <!-- DOCTOR -->
+  <div id="tab-doctor" style="display:none;">
+    <section class="card">
+      <h2>Prepare a summary</h2>
+      <p class="hint">Pick a date range, then print or screenshot the summary below to bring to your appointment.</p>
+      <div class="doc-controls">
+        <div class="field">
+          <label class="field-label">From</label>
+          <input type="date" id="docFrom">
+        </div>
+        <div class="field">
+          <label class="field-label">To</label>
+          <input type="date" id="docTo">
+        </div>
+        <button class="ghost" id="docBuildBtn">Build summary</button>
+        <button class="ghost" id="docPrintBtn">Print</button>
+      </div>
+    </section>
+    <div id="doctorOutput"><p style="color:var(--ink-soft)">Pick a date range and press "Build summary."</p></div>
+  </div>
+
+  <div class="util-row">
+    <button class="ghost" id="exportJsonBtn">Export JSON</button>
+    <button class="ghost" id="exportCsvBtn">Export CSV</button>
+  </div>
+
+</div>
+
+<script src="vendor-supabase.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
