@@ -7,5 +7,5 @@
 // every Supabase app) — your data is protected by the Row Level Security
 // policies in supabase/schema.sql, not by keeping this file secret.
 
-export const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co';
-export const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+export const SUPABASE_URL = 'https://jodzvazsrltpiarrjxro.supabase.co';
+export const SUPABASE_ANON_KEY = 'sb_publishable_KXothAKaKzY4HFa1F4MrUw_-VBB7ZIh';

@@ -58,6 +58,12 @@
   <!-- TODAY -->
   <div id="tab-today">
 
+    <div class="editing-bar" id="editingBar">
+      <span class="editing-label" id="editingLabel">Editing today</span>
+      <input type="date" id="editDateInput">
+      <button class="ghost hidden" id="jumpTodayBtn">Jump to today</button>
+    </div>
+
     <section class="card cycle-card">
       <div class="cycle-top">
         <div>
@@ -101,8 +107,8 @@
     </section>
 
     <section class="card">
-      <h2>How today felt</h2>
-      <p class="hint">Update this any time — it's fine to fill in partway through the day and adjust later.</p>
+      <h2 id="feltHeading">How today felt</h2>
+      <p class="hint">Update this any time — it's fine to fill in partway through the day, or go back and fill in a day you missed.</p>
 
       <label class="field-label">Energy level</label>
       <div class="scale" id="energyScale">

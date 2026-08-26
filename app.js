@@ -179,6 +179,32 @@ document.getElementById('saveDayBtn').onclick = () => {
   persistCurrentDay(false);
 };
 
+// ---------- jumping to / editing a different day ----------
+
+function jumpToDate(date) {
+  state.currentDate = date;
+  state.dayData = entryFor(date);
+  renderFoodList();
+  renderScales();
+  renderEditingBar();
+  document.querySelector('nav.tabs button[data-tab="today"]').click();
+}
+
+function renderEditingBar() {
+  const isToday = state.currentDate === todayStr();
+  document.getElementById('editDateInput').value = state.currentDate;
+  document.getElementById('editDateInput').max = todayStr();
+  document.getElementById('editingLabel').textContent = isToday ? 'Editing today' : `Editing ${fmtDate(state.currentDate)}`;
+  document.getElementById('jumpTodayBtn').classList.toggle('hidden', isToday);
+  document.getElementById('feltHeading').textContent = isToday ? 'How today felt' : `How ${fmtDate(state.currentDate)} felt`;
+  document.getElementById('saveDayBtn').textContent = isToday ? "Save today's entry" : 'Save this entry';
+}
+
+document.getElementById('editDateInput').addEventListener('change', (e) => {
+  if (e.target.value) jumpToDate(e.target.value);
+});
+document.getElementById('jumpTodayBtn').onclick = () => jumpToDate(todayStr());
+
 // ---------- tabs ----------
 
 document.querySelectorAll('nav.tabs button').forEach(btn => {
@@ -216,12 +242,7 @@ function renderRibbon() {
     </div>`;
   }).join('');
   el.querySelectorAll('.rday').forEach(cell => {
-    cell.onclick = () => {
-      state.currentDate = cell.dataset.date;
-      state.dayData = entryFor(state.currentDate);
-      renderFoodList(); renderScales();
-      document.querySelector('nav.tabs button[data-tab="today"]').click();
-    };
+    cell.onclick = () => jumpToDate(cell.dataset.date);
   });
 }
 
@@ -272,7 +293,7 @@ function renderHistory() {
     if (data.crash && data.crash !== 'none') tags.push(`<span class="tag migraine" style="background:${data.crash === 'hard' ? 'var(--clay)' : 'var(--clay-soft)'};border-color:transparent;">Crash: ${data.crash}</span>`);
     if (data.gym) tags.push(`<span class="tag" style="${data.gym === 'yes' ? 'border-color:var(--sage);color:var(--pine);' : ''}">Gym: ${data.gym === 'yes' ? '✓' : '✕'}</span>`);
     if (data.inositol) tags.push(`<span class="tag" style="${data.inositol === 'yes' ? 'border-color:var(--plum);color:var(--plum);' : ''}">Inositol: ${data.inositol === 'yes' ? '✓' : '✕'}</span>`);
-    return `<div class="hist-day">
+    return `<div class="hist-day" data-date="${date}" title="Tap to edit this day">
       <div class="hd"><span class="date">${fmtDate(date)}</span><div class="tags">${tags.join('')}</div></div>
       <div class="foods">${foodsTxt}</div>
       ${data.notes ? `<div class="note">"${escapeHtml(data.notes)}"</div>` : ''}
@@ -280,6 +301,9 @@ function renderHistory() {
   }).join('') || '<div class="empty-state">No entries yet.</div>';
 
   el.innerHTML = summaryHtml + rows;
+  el.querySelectorAll('.hist-day[data-date]').forEach(row => {
+    row.onclick = () => jumpToDate(row.dataset.date);
+  });
 }
 
 // ---------- doctor summary ----------
@@ -438,6 +462,7 @@ async function showApp(session) {
 
   renderFoodList();
   renderScales();
+  renderEditingBar();
   renderRibbon();
   renderCycleWidget();
 }
